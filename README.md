@@ -28,3 +28,29 @@ Host alias2
   User username
   ProxyCommand ssh -W %h:%p alias1
 ```
+* Далее можно подключиться по алиасу `ssh alias2`
+  
+  #### Создание VPN сервера на экземпляре VM bastion host
+  В консоли bastion host выполняем следующие команды
+```
+$ cat <<EOF> setupvpn.sh
+> #!/bin/bash
+> echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" > /etc/
+apt/sources.list.d/mongodb-org-3.4.list
+> echo "deb http://repo.pritunl.com/stable/apt xenial main" > /etc/apt/sources.list.d/
+pritunl.list
+> apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv
+0C49F3730359A14518585931BC711F9BA15703C6
+> apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv
+7568D9BB55FF9E5287D586017AE645C0CF8E292A
+> apt-get --assume-yes update
+> apt-get --assume-yes upgrade
+> apt-get --assume-yes install pritunl mongodb-org
+> systemctl start pritunl mongod
+> systemctl enable pritunl mongod
+> EOF
+```
+`$ sudo bash setupvpn.sh`
+это создаст файл со скриптами и выполнит его, после чего можно перейти по ссылке `http://<адрес bastion VM>/setup`
+* Сгенерировать на сервере ключ и ввести его, командой `sudo pritunl setup-key`
+* Сгенерировать пароль и логин командо `sudo pritunl default-password`
