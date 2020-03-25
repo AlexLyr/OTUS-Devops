@@ -15,4 +15,16 @@ DevOps практики и инструменты
   необходимо пробросить его с помощью ssh агента
 * `ssh-add -L` - проверка добавленных ключей в агент; `ssh-add ~/.ssh/<private_key_file_name>` добавление ключа в агента
 * Теперь можно подключиться к внутренней тачке с помощью команды `ssh -i ~/.ssh/<private_key_file_name> username@<external_ip> -A` и уже с бастион хоста кинуть соединение на внутренний инстанс
-* 
+* Чтобы установить соединение напрямую без дополнительных команд с внутренним экземпляром ВМ, можно проксировать запросы через
+  bastion host для этого:
+  1. Создаем файл `~/.ssh/config` и в нем прописываем следующие конфиги:
+  2. ```
+Host alias1
+  Hostname <external_ip>
+  User username
+  IdentityFile <absolut_path_to_private_bastion_key>
+Host alias2
+  Hostname <internal_ip>
+  User username
+  ProxyCommand ssh -W %h:%p alias1
+```
